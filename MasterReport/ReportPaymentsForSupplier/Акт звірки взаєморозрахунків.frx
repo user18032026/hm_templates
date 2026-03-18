@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="02/23/2025 16:10:42" ReportInfo.CreatorVersion="2020.1.28.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    public static string GrnPhrase (decimal money)
+    { 
+      return CurPhrase(money,&quot;гривня&quot;,&quot;гривні&quot;,&quot;гривень&quot;,&quot;копійка&quot;,&quot;копійки&quot;,&quot;копійок&quot;);
+    }
+ 
+    
+ 
+    private static string NumPhrase (ulong Value, bool IsMale) 
+    {
+      if (Value==0) return &quot;Нуль&quot;;
+      string[] Dek1={&quot;&quot;,&quot; одна&quot;,&quot; дві&quot;,&quot; три&quot;,&quot; чотири&quot;,&quot; п'ять&quot;,&quot; шість&quot;,&quot; сім&quot;,&quot; вісім&quot;,&quot; дев'ять&quot;,&quot; десять&quot;,&quot; одинадцять&quot;,&quot; дванадцять&quot;,&quot; тринадцять&quot;,&quot; чотирнадцять&quot;,&quot; п'ятнадцять&quot;,&quot; шістнадцять&quot;,&quot; сімнадцять&quot;,&quot; вісімнадцять&quot;,&quot; дев'ятнадцять&quot;};
+      string[] Dek2={&quot;&quot;,&quot;&quot;,&quot; двадцять&quot;,&quot; тридцять&quot;,&quot; сорок&quot;,&quot; п'ятдесят&quot;,&quot; шістдесят&quot;,&quot; сімдесят&quot;,&quot; вісімдесят&quot;,&quot; дев'яносто&quot;};
+      string[] Dek3={&quot;&quot;,&quot; сто&quot;,&quot; двісті&quot;,&quot; триста&quot;,&quot; чотириста&quot;,&quot; п'ятсот&quot;,&quot; шістсот&quot;,&quot; сімсот&quot;,&quot; вісімсот&quot;,&quot; дев'ятсот&quot;};
+      string[] Th={&quot;&quot;,&quot;&quot;,&quot; тисяч&quot;,&quot; мільйон&quot;,&quot; міліард&quot;,&quot; триліон&quot;,&quot; квадриліон&quot;,&quot; квинтиліон&quot;};
+      string str=&quot;&quot;;
+      for (byte th=1; Value&gt;0; th++) 
+      {
+        ushort gr=(ushort)(Value%1000); 
+        Value=(Value-gr)/1000;
+        if (gr&gt;0) 
+        {
+          byte d3=(byte)((gr-gr%100)/100);
+          byte d1=(byte)(gr%10);
+          byte d2=(byte)((gr-d3*100-d1)/10);
+          if (d2==1) d1+=(byte)10;
+          bool ismale=(th&gt;2)||((th==1)&amp;&amp;IsMale);
+          str=Dek3[d3]+Dek2[d2]+Dek1[d1]+EndDek1(d1,ismale)+Th[th]+EndTh(th,d1)+str;
+        };
+      };
+      str=str.Substring(1,1).ToUpper()+str.Substring(2);
+      return str;
+    }
+ 
+    #region Private members
+    private static string CurPhrase (decimal money, 
+      string word1,string word234,string wordmore,
+      string sword1,string sword234,string swordmore)
+    { 
+      //money=decimal.Round(money,2);
+      decimal decintpart=decimal.Truncate(money);
+      ulong intpart=decimal.ToUInt64(decintpart);
+      string str=NumPhrase(intpart,true)+&quot; &quot;;
+      byte endpart=(byte)(intpart%100); 
+      if (endpart&gt;19) endpart=(byte)(endpart%10);
+      switch (endpart) 
+      {
+        case 1: str+=word1; break;
+        case 2:
+        case 3:
+        case 4: str+=word234; break;
+        default: str+=wordmore; break;
+      }
+      byte fracpart=decimal.ToByte((money-decintpart)*100M);
+      str+=&quot; &quot;+((fracpart&lt;10)?&quot;0&quot;:&quot;&quot;)+fracpart.ToString()+&quot; &quot;;
+      if (fracpart&gt;19) fracpart=(byte)(fracpart%10);
+      switch (fracpart) 
+      {
+        case 1: str+=sword1; break;
+        case 2:
+        case 3:
+        case 4: str+=sword234; break;
+        default: str+=swordmore; break;
+      };
+      return str;
+    }
+    private static string EndTh(byte ThNum, byte Dek)
+    {
+      bool In234=((Dek&gt;=2)&amp;&amp;(Dek&lt;=4));
+      bool More4=((Dek&gt;4)||(Dek==0));
+      if (((ThNum&gt;2)&amp;&amp;In234)||((ThNum==2)&amp;&amp;(Dek==1))) return &quot;а&quot;;
+      else if ((ThNum&gt;2)&amp;&amp;More4) return &quot;ів&quot;;
+      else if ((ThNum==2)&amp;&amp;In234) return &quot;і&quot;;
+      else return &quot;&quot;;
+    }
+    private static string EndDek1(byte Dek, bool IsMale)
+    {
+      if ((Dek&gt;2)||(Dek==0)) return &quot;&quot;;
+      else if (Dek==1) 
+      {
+        if (IsMale) return &quot;ин&quot;;
+        else return &quot;&quot;;
+      }
+      else 
+      {
+        if (IsMale) return &quot;&quot;; 
+        else return &quot;&quot;;    
+      }
+    }
+    #endregion
+  }
+}</ScriptText>
+  <Dictionary>
+    <BusinessObjectDataSource Name="payments" ReferenceName="payments" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.PaymentItem, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null]]" Enabled="true">
+      <Column Name="DateTime" DataType="System.DateTime"/>
+      <Column Name="ParentUid" DataType="System.Guid"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Sum" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="items" ReferenceName="items" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.ListItems.BasketItem, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null]]" Enabled="true">
+      <Column Name="DocumentUid" DataType="System.Guid"/>
+      <Column Name="Good" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Good, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null">
+        <Column Name="Uid" DataType="System.Guid"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Group" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.GoodGroup, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null">
+          <Column Name="Uid" DataType="System.Guid"/>
+          <Column Name="Name" DataType="System.String"/>
+          <Column Name="ParentGroupUid" DataType="System.Guid"/>
+          <Column Name="GoodsType" DataType="System.String"/>
+          <Column Name="UnitsUid" DataType="System.Guid"/>
+          <Column Name="NeedComment" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="IsDataParent" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="IsRequestCount" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="TaxRateNumber" DataType="System.Int32"/>
+          <Column Name="KkmSectionNumber" DataType="System.Int32"/>
+          <Column Name="IsFreePrice" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="DecimalPlace" DataType="System.Int32"/>
+          <Column Name="RuTaxSystem" DataType="System.String"/>
+          <Column Name="RuFfdGoodsType" DataType="System.String"/>
+          <Column Name="RuMarkedProductionType" DataType="System.String"/>
+          <Column Name="TaxRateNumberText" DataType="System.String"/>
+        </Column>
+        <Column Name="Barcode" DataType="System.String"/>
+        <Column Name="UnitName" DataType="System.String"/>
+        <Column Name="Unit" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Unit, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null">
+          <Column Name="FullName" DataType="System.String"/>
+          <Column Name="ShortName" DataType="System.String"/>
+          <Column Name="Code" DataType="System.String"/>
+        </Column>
+        <Column Name="VatValue" DataType="System.Decimal"/>
+        <Column Name="NdsName" DataType="System.String"/>
+        <Column Name="NdsValue" DataType="System.Decimal"/>
+        <Column Name="TotalCount" DataType="System.Decimal"/>
+        <Column Name="Description" DataType="System.String"/>
+        <Column Name="BusinessObjectDataSource2" Alias="Properties" DataType="System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" PropName="Properties">
+          <Column Name="Key" DataType="System.String"/>
+          <Column Name="Value" Enabled="false" DataType="System.Object"/>
+        </Column>
+        <BusinessObjectDataSource Name="BusinessObjectDataSource1" Alias="Properties" Enabled="false" DataType="System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" PropName="Properties"/>
+      </Column>
+      <Column Name="Quantity" DataType="System.Decimal"/>
+      <Column Name="Price" DataType="System.Decimal"/>
+      <Column Name="BuyPrice" DataType="System.Decimal"/>
+      <Column Name="Discount" DataType="System.Decimal"/>
+      <Column Name="Comment" DataType="System.String"/>
+      <Column Name="DiscountSum" DataType="System.Decimal"/>
+      <Column Name="Sum" DataType="System.Decimal"/>
+      <Column Name="SumLessNds" DataType="System.Decimal"/>
+      <Column Name="NdsValue" DataType="System.Decimal"/>
+      <Column Name="NdsSum" DataType="System.Decimal"/>
+      <Column Name="GoodModificationName" DataType="System.String"/>
+      <Column Name="DisplayedName" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="documents" ReferenceName="documents" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.Document, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null]]" Enabled="true">
+      <Column Name="Uid" DataType="System.Guid"/>
+      <Column Name="Date" DataType="System.DateTime"/>
+      <Column Name="Number" DataType="System.String"/>
+      <Column Name="Comment" DataType="System.String"/>
+      <Column Name="ContractorUid" DataType="System.Guid"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="CompanyAddress" DataType="System.String"/>
+    <Parameter Name="CompanyName" DataType="System.String"/>
+    <Parameter Name="CompanyPhone" DataType="System.String"/>
+    <Parameter Name="CompanyPublicPointName" DataType="System.String"/>
+    <Parameter Name="CompanyInfo" DataType="System.String"/>
+    <Parameter Name="CompanyInn" DataType="System.String"/>
+    <Parameter Name="CompanyKPP" DataType="System.String"/>
+    <Parameter Name="CompanyOGRN" DataType="System.String"/>
+    <Parameter Name="CompanyBank" DataType="System.String"/>
+    <Parameter Name="CompanyBik" DataType="System.String"/>
+    <Parameter Name="CompanyKs" DataType="System.String"/>
+    <Parameter Name="CompanyRs" DataType="System.String"/>
+    <Parameter Name="DbName" DataType="System.String"/>
+    <Parameter Name="DateStartReport" DataType="System.DateTime"/>
+    <Parameter Name="DateFinishReport" DataType="System.DateTime"/>
+    <Parameter Name="ClientName" DataType="System.String"/>
+    <Parameter Name="ClientPhone" DataType="System.String"/>
+    <Parameter Name="ClientBarcode" DataType="System.String"/>
+    <Parameter Name="ClientAddress" DataType="System.String"/>
+    <Parameter Name="ClientBank" DataType="System.String"/>
+    <Parameter Name="ClientInn" DataType="System.String"/>
+    <Parameter Name="ClientKPP" DataType="System.String"/>
+    <Parameter Name="ClientKs" DataType="System.String"/>
+    <Parameter Name="ClientBik" DataType="System.String"/>
+    <Parameter Name="ClientOGRN" DataType="System.String"/>
+    <Parameter Name="ClientRs" DataType="System.String"/>
+    <Parameter Name="ClientEmail" DataType="System.String"/>
+    <Parameter Name="ClientBonusesSum" DataType="System.Decimal"/>
+    <Parameter Name="ClientCreditSum" DataType="System.Decimal"/>
+    <Parameter Name="ClientComment" DataType="System.String"/>
+    <Parameter Name="Saldo" DataType="System.Decimal"/>
+    <Parameter Name="SaldoEnd" DataType="FastReport.Variant" Expression="[Saldo]+[TotalItem]-[TotalPayments]"/>
+    <Total Name="Total" Expression="[payments.Sum]" Evaluator="Data3" ResetAfterPrint="false" EvaluateCondition="[payments.Sum]&gt;0"/>
+    <Total Name="TotalItemForDocument" Expression="[payments.Sum]" Evaluator="Data3" PrintOn="DataFooter2" EvaluateCondition="[payments.Sum]&gt;0"/>
+    <Total Name="TotalPaymentsForDocument" Expression="-1*[payments.Sum]" Evaluator="Data3" PrintOn="DataFooter2" EvaluateCondition="[payments.Sum]&lt;0"/>
+    <Total Name="TotalItem" Expression="[payments.Sum]" Evaluator="Data3" ResetAfterPrint="false" EvaluateCondition="[payments.Sum]&gt;0"/>
+    <Total Name="TotalPayments" Expression="[payments.Sum]*-1" Evaluator="Data3" ResetAfterPrint="false" EvaluateCondition="[payments.Sum]&lt;0"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="207.9" CanGrow="true">
+      <TextObject Name="Text1" Top="9.45" Width="1048.95" Height="28.35" Text="АКТ ЗВІРКИ" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+      <TextObject Name="Text2" Top="37.8" Width="1048.95" Height="56.7" Text="взаєморозрахунків за період: [DateStartReport] - [DateFinishReport]&#13;&#10;між [CompanyName]&#13;&#10;і [ClientName]" HorzAlign="Center" Font="Arial, 12pt">
+        <Formats>
+          <DateFormat/>
+          <DateFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+      <TextObject Name="Text3" Left="18.9" Top="103.95" Width="1001.7" Height="47.25" Text="Ми,нижче підписалися, [CompanyName] з одного боку, і [ClientName] , з іншого боку, склали цей акт звірки в тому, що, стан взаємних розрахунків за даними обліку такий:	" Font="Arial, 12pt"/>
+      <TableObject Name="Table1" Left="28.35" Top="151.2" Width="992.02" Height="56.7" GrowToBottom="true">
+        <TableColumn Name="Column1" Width="105.84"/>
+        <TableColumn Name="Column2" Width="142.13"/>
+        <TableColumn Name="Column3" Width="124.02"/>
+        <TableColumn Name="Column4" Width="124.02"/>
+        <TableColumn Name="Column5" Width="105.84"/>
+        <TableColumn Name="Column6" Width="142.13"/>
+        <TableColumn Name="Column7" Width="124.02"/>
+        <TableColumn Name="Column8" Width="124.02"/>
+        <TableRow Name="Row1">
+          <TableCell Name="Cell1" Border.Lines="All" Text="За даними [CompanyName], грн." VertAlign="Center" Font="Arial, 9pt" ColSpan="4"/>
+          <TableCell Name="Cell2" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell3" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell4" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell5" Border.Lines="All" Text="За даними [ClientName], грн." VertAlign="Center" Font="Arial, 9pt" ColSpan="4"/>
+          <TableCell Name="Cell11" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell12" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell13" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+        </TableRow>
+        <TableRow Name="Row2">
+          <TableCell Name="Cell6" Border.Lines="All" Text="Дата" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell7" Border.Lines="All" Text="Документ" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell8" Border.Lines="All" Text="Дебет" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell9" Border.Lines="All" Text="Кредит" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell10" Border.Lines="All" Text="Дата" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell14" Border.Lines="All" Text="Документ" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell15" Border.Lines="All" Text="Дебет" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell16" Border.Lines="All" Text="Кредит" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row3">
+          <TableCell Name="Cell17" Border.Lines="All" Text="Сальдо початкове" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="2"/>
+          <TableCell Name="Cell18" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell19" Border.Lines="All" Text="[IIf([Saldo]&lt;0,[Saldo]*-1,&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell20" Border.Lines="All" Text="[IIf([Saldo]&gt;0,[Saldo],&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell21" Border.Lines="All" Text="Сальдо початкове" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="2"/>
+          <TableCell Name="Cell22" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell23" Border.Lines="All" Text="[IIf([Saldo]&gt;0,[Saldo],&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell24" Border.Lines="All" Text="[IIf([Saldo]&lt;0,[Saldo]*-1,&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        </TableRow>
+      </TableObject>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="209.82" Width="1047.06" Height="18.9" CanGrow="true" CanShrink="true" DataSource="documents">
+      <TableObject Name="Table3" Left="28.35" Width="992.02" Height="18.9">
+        <TableColumn Name="Column17" Width="105.84"/>
+        <TableColumn Name="Column18" Width="142.13"/>
+        <TableColumn Name="Column19" Width="124.02"/>
+        <TableColumn Name="Column20" Width="124.02"/>
+        <TableColumn Name="Column21" Width="105.84"/>
+        <TableColumn Name="Column22" Width="142.13"/>
+        <TableColumn Name="Column23" Width="124.02"/>
+        <TableColumn Name="Column24" Width="124.02"/>
+        <TableRow Name="Row7">
+          <TableCell Name="Cell49" Border.Lines="All" Text="Накладна №[documents.Number] від [documents.Date]" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="8">
+            <Formats>
+              <GeneralFormat/>
+              <DateFormat/>
+            </Formats>
+          </TableCell>
+          <TableCell Name="Cell50" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell51" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell52" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell53" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell54" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell55" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell56" Border.Lines="All" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+      </TableObject>
+      <DataBand Name="Data3" Top="230.65" Width="1047.06" Height="18.9" CanGrow="true" CanShrink="true" DataSource="payments" Filter="[payments.ParentUid]==[documents.Uid]">
+        <TableObject Name="Table2" Left="28.35" Width="992.02" Height="18.9">
+          <TableColumn Name="Column9" Width="105.84"/>
+          <TableColumn Name="Column10" Width="142.13"/>
+          <TableColumn Name="Column11" Width="124.02"/>
+          <TableColumn Name="Column12" Width="124.02"/>
+          <TableColumn Name="Column13" Width="105.84"/>
+          <TableColumn Name="Column14" Width="142.13"/>
+          <TableColumn Name="Column15" Width="124.02"/>
+          <TableColumn Name="Column16" Width="124.02"/>
+          <TableRow Name="Row6" AutoSize="true">
+            <TableCell Name="Cell41" Border.Lines="All" Text="[payments.DateTime]" Format="Date" Format.Format="d" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell42" Border.Lines="All" Text="[payments.Name]" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell43" Border.Lines="All" Text="[IIf([payments.Sum]&lt;0,[payments.Sum]*-1,&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell44" Border.Lines="All" Text="[IIf([payments.Sum]&gt;0,[payments.Sum],&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell45" Border.Lines="All" Text="[payments.DateTime]" Format="Date" Format.Format="d" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell46" Border.Lines="All" Text="[payments.Name]" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell47" Border.Lines="All" Text="[IIf([payments.Sum]&gt;0,[payments.Sum],&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell48" Border.Lines="All" Text="[IIf([payments.Sum]&gt;0,&quot;&quot;,-1*[payments.Sum])]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          </TableRow>
+        </TableObject>
+        <DataFooterBand Name="DataFooter2" Top="251.47" Width="1047.06" Height="18.9">
+          <TableObject Name="Table5" Left="28.35" Width="992.02" Height="18.9">
+            <TableColumn Name="Column33" Width="105.84"/>
+            <TableColumn Name="Column34" Width="142.13"/>
+            <TableColumn Name="Column35" Width="124.02"/>
+            <TableColumn Name="Column36" Width="124.02"/>
+            <TableColumn Name="Column37" Width="105.84"/>
+            <TableColumn Name="Column38" Width="142.13"/>
+            <TableColumn Name="Column39" Width="124.02"/>
+            <TableColumn Name="Column40" Width="124.02"/>
+            <TableRow Name="Row9">
+              <TableCell Name="Cell65" Border.Lines="All" Text="Разом за документом:" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 10pt" ColSpan="2"/>
+              <TableCell Name="Cell66" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell67" Border.Lines="All" Text="[IIf([TotalPaymentsForDocument]==0,&quot;&quot;,[TotalPaymentsForDocument])]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell68" Border.Lines="All" Text="[IIf([TotalItemForDocument]==0,&quot;&quot;,[TotalItemForDocument])]&#13;&#10;" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell69" Border.Lines="All" Text="Разом за документом:" HorzAlign="Right" VertAlign="Center" Font="Arial, 10pt" ColSpan="2"/>
+              <TableCell Name="Cell70" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell71" Border.Lines="All" Text="[IIf([TotalItemForDocument]==0,&quot;&quot;,[TotalItemForDocument])]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell72" Border.Lines="All" Text="[IIf([TotalPaymentsForDocument]==0,&quot;&quot;,[TotalPaymentsForDocument])]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            </TableRow>
+          </TableObject>
+        </DataFooterBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="272.29" Width="1047.06" Height="302.4" CanGrow="true" CanShrink="true" CanBreak="true">
+        <TableObject Name="Table6" Left="28.35" Width="992.02" Height="18.9">
+          <TableColumn Name="Column41" Width="105.84"/>
+          <TableColumn Name="Column42" Width="142.13"/>
+          <TableColumn Name="Column43" Width="124.02"/>
+          <TableColumn Name="Column44" Width="124.02"/>
+          <TableColumn Name="Column45" Width="105.84"/>
+          <TableColumn Name="Column46" Width="142.13"/>
+          <TableColumn Name="Column47" Width="124.02"/>
+          <TableColumn Name="Column48" Width="124.02"/>
+          <TableRow Name="Row10">
+            <TableCell Name="Cell73" Border.Lines="All" Text="Обороти за період" Format="Date" Format.Format="d" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="2"/>
+            <TableCell Name="Cell74" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell75" Border.Lines="All" Text="[TotalPayments]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell76" Border.Lines="All" Text="[TotalItem]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell77" Border.Lines="All" Text="Обороти за період" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="2"/>
+            <TableCell Name="Cell78" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell79" Border.Lines="All" Text="[TotalItem]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell80" Border.Lines="All" Text="[TotalPayments]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          </TableRow>
+        </TableObject>
+        <TableObject Name="Table7" Left="28.35" Top="18.9" Width="992.02" Height="18.9">
+          <TableColumn Name="Column49" Width="105.84"/>
+          <TableColumn Name="Column50" Width="142.13"/>
+          <TableColumn Name="Column51" Width="124.02"/>
+          <TableColumn Name="Column52" Width="124.02"/>
+          <TableColumn Name="Column53" Width="105.84"/>
+          <TableColumn Name="Column54" Width="142.13"/>
+          <TableColumn Name="Column55" Width="124.02"/>
+          <TableColumn Name="Column56" Width="124.02"/>
+          <TableRow Name="Row11" AutoSize="true">
+            <TableCell Name="Cell81" Border.Lines="All" Text="Сальдо кінцеве" Format="Date" Format.Format="d" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="2"/>
+            <TableCell Name="Cell82" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell83" Border.Lines="All" Text="[IIf([SaldoEnd]&lt;ToDecimal(0),[SaldoEnd]*ToDecimal(-1),&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell84" Border.Lines="All" Text="[IIf([SaldoEnd]&gt;ToDecimal(0),[SaldoEnd],&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell85" Border.Lines="All" Text="Сальдо кінцеве" VertAlign="Center" Font="Arial, 10pt, style=Bold" ColSpan="2"/>
+            <TableCell Name="Cell86" Border.Lines="All" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell87" Border.Lines="All" Text="[IIf([SaldoEnd]&gt;ToDecimal(0),[SaldoEnd],&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            <TableCell Name="Cell88" Border.Lines="All" Text="[IIf([SaldoEnd]&lt;ToDecimal(0),[SaldoEnd]*ToDecimal(-1),&quot;&quot;)]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          </TableRow>
+        </TableObject>
+        <TextObject Name="Text6" Left="529.2" Top="66.15" Width="500.85" Height="85.05" CanGrow="true" Text="на [DateFinishReport] [IIf([SaldoEnd]==ToDecimal(0),&quot;заборгованості немає&quot;,&quot;заборгованість на користь &quot;+IIf([SaldoEnd]&lt;ToDecimal(0),[CompanyName],[ClientName])+&quot; &quot;+IIf([SaldoEnd]&lt;ToDecimal(0),[SaldoEnd]*ToDecimal(-1),[SaldoEnd])+&quot; грн.&quot;)]" Font="Arial, 12pt, style=Bold">
+          <Formats>
+            <DateFormat/>
+            <NumberFormat/>
+            <NumberFormat/>
+            <GeneralFormat/>
+          </Formats>
+        </TextObject>
+        <TextObject Name="Text4" Left="28.35" Top="47.25" Width="500.85" Height="18.9" Text="За даними [CompanyName]" Font="Arial, 12pt"/>
+        <TextObject Name="Text5" Left="28.35" Top="66.15" Width="500.85" Height="85.05" CanGrow="true" Text="на [DateFinishReport] [IIf([SaldoEnd]==ToDecimal(0),&quot;заборгованості немає&quot;,&quot;заборгованість на користь &quot;+IIf([SaldoEnd]&lt;ToDecimal(0),[CompanyName],[ClientName])+&quot; &quot;+IIf([SaldoEnd]&lt;ToDecimal(0),[SaldoEnd]*ToDecimal(-1),[SaldoEnd])+&quot; грн.&quot;)]" Font="Arial, 12pt, style=Bold">
+          <Formats>
+            <DateFormat/>
+            <NumberFormat/>
+            <NumberFormat/>
+            <GeneralFormat/>
+          </Formats>
+        </TextObject>
+        <TextObject Name="Text7" Left="529.2" Top="47.25" Width="500.85" Height="18.9" Text="За даними [ClientName]" Font="Arial, 12pt"/>
+        <TextObject Name="Text8" Left="28.35" Top="170.1" Width="500.85" Height="18.9" Text="Від [CompanyName]" Font="Arial, 12pt"/>
+        <TextObject Name="Text9" Left="529.2" Top="170.1" Width="500.85" Height="18.9" Text="Від [ClientName]" Font="Arial, 12pt"/>
+        <TextObject Name="Text10" Left="28.35" Top="207.9" Width="500.85" Height="18.9" Text="__________________________________(___________)" Font="Arial, 12pt"/>
+        <TextObject Name="Text11" Left="529.2" Top="207.9" Width="500.85" Height="18.9" Text="__________________________________(___________)" Font="Arial, 12pt"/>
+        <TextObject Name="Text12" Left="28.35" Top="245.7" Width="56.7" Height="18.9" Text="М.П." Font="Arial, 12pt"/>
+        <TextObject Name="Text13" Left="529.2" Top="245.7" Width="56.7" Height="18.9" Text="М.П." Font="Arial, 12pt"/>
+      </DataFooterBand>
+      <Sort>
+        <Sort Expression="[documents.Date]"/>
+      </Sort>
+    </DataBand>
+  </ReportPage>
+</Report>

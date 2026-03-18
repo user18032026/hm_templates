@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="02/23/2025 12:48:52" ReportInfo.CreatorVersion="2020.1.28.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="certificates" ReferenceName="certificates" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.Certificate, Market, Version=6.7.0.2700, Culture=neutral, PublicKeyToken=null]]" Enabled="true">
+      <Column Name="Uid" DataType="System.Guid"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Barcode" DataType="System.String"/>
+      <Column Name="Nominal" DataType="System.Decimal"/>
+      <Column Name="Price" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="CompanyAddress" DataType="System.String"/>
+    <Parameter Name="CompanyName" DataType="System.String"/>
+    <Parameter Name="CompanyPhone" DataType="System.String"/>
+    <Parameter Name="CompanyPublicPointName" DataType="System.String"/>
+    <Parameter Name="CompanyInfo" DataType="System.String"/>
+    <Parameter Name="CompanyInn" DataType="System.String"/>
+    <Parameter Name="CompanyKPP" DataType="System.String"/>
+    <Parameter Name="CompanyOGRN" DataType="System.String"/>
+    <Parameter Name="CompanyBank" DataType="System.String"/>
+    <Parameter Name="CompanyBik" DataType="System.String"/>
+    <Parameter Name="CompanyKs" DataType="System.String"/>
+    <Parameter Name="CompanyRs" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" PaperWidth="40" PaperHeight="25" LeftMargin="0" TopMargin="0" RightMargin="0" BottomMargin="0" FirstPageSource="15" OtherPagesSource="15" Watermark.Font="Arial, 60pt">
+    <DataBand Name="Data1" Width="151.2" Height="94.5" CanShrink="true" DataSource="certificates">
+      <TextObject Name="Text1" Left="9.45" Top="3.78" Width="132.3" Height="28.35" Text="[certificates.Name]" HorzAlign="Center" Font="Arial, 10pt, style=Italic"/>
+      <BarcodeObject Name="Barcode1" Left="9.45" Top="37.8" Width="132.3" Height="37.8" AutoSize="false" DataColumn="certificates.Barcode" Text="[certificates.Barcode]" AllowExpressions="true" Barcode="Code128" Barcode.AutoEncode="true"/>
+      <TextObject Name="Text2" Left="9.45" Top="71.7" Width="132.3" Height="18.9" Text="[certificates.Nominal] грн" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+    </DataBand>
+  </ReportPage>
+</Report>
