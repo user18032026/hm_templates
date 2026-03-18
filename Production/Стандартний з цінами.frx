@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/10/2017 22:56:57" ReportInfo.Modified="03/19/2024 10:10:47" ReportInfo.CreatorVersion="2020.1.28.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="productions" ReferenceName="productions" DataType="System.Linq.Enumerable+&lt;SelectManyIterator&gt;d__17`2[[Gbs.Core.Entities.Documents.Document, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null],[Gbs.Helpers.FR.BackEnd.Entities.ListItems.BasketItem, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null]], System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Enabled="true">
+      <Column Name="DocumentsType" DataType="System.Int32"/>
+      <Column Name="DocumentUid" DataType="System.Guid"/>
+      <Column Name="GoodUid" DataType="System.Guid"/>
+      <Column Name="Good" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Good, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null">
+        <Column Name="Uid" DataType="System.Guid"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Group" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.GoodGroup, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null">
+          <Column Name="Uid" DataType="System.Guid"/>
+          <Column Name="Name" DataType="System.String"/>
+          <Column Name="ParentGroupUid" DataType="System.Guid"/>
+          <Column Name="GoodsType" DataType="System.String"/>
+          <Column Name="UnitsUid" DataType="System.Guid"/>
+          <Column Name="NeedComment" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="IsDataParent" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="IsRequestCount" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="TaxRateNumber" DataType="System.Int32"/>
+          <Column Name="KkmSectionNumber" DataType="System.Int32"/>
+          <Column Name="IsFreePrice" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="DecimalPlace" DataType="System.Int32"/>
+          <Column Name="RuTaxSystem" DataType="System.String"/>
+          <Column Name="RuFfdGoodsType" DataType="System.String"/>
+          <Column Name="RuMarkedProductionType" DataType="System.String"/>
+          <Column Name="TaxRateNumberText" DataType="System.String"/>
+        </Column>
+        <Column Name="Barcode" DataType="System.String"/>
+        <Column Name="UnitName" DataType="System.String"/>
+        <Column Name="Unit" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Unit, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null">
+          <Column Name="FullName" DataType="System.String"/>
+          <Column Name="ShortName" DataType="System.String"/>
+          <Column Name="Code" DataType="System.String"/>
+        </Column>
+        <Column Name="VatValue" DataType="System.Decimal"/>
+        <Column Name="NdsName" DataType="System.String"/>
+        <Column Name="NdsValue" DataType="System.Decimal"/>
+        <Column Name="TotalCount" DataType="System.Decimal"/>
+        <Column Name="Description" DataType="System.String"/>
+        <BusinessObjectDataSource Name="BusinessObjectDataSource1" Alias="Properties" Enabled="false" DataType="System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" PropName="Properties"/>
+      </Column>
+      <Column Name="Quantity" DataType="System.Decimal"/>
+      <Column Name="Price" DataType="System.Decimal"/>
+      <Column Name="BuyPrice" DataType="System.Decimal"/>
+      <Column Name="Discount" DataType="System.Decimal"/>
+      <Column Name="Comment" DataType="System.String"/>
+      <Column Name="DiscountSum" DataType="System.Decimal"/>
+      <Column Name="Sum" DataType="System.Decimal"/>
+      <Column Name="SumLessNds" DataType="System.Decimal"/>
+      <Column Name="NdsValue" DataType="System.Decimal"/>
+      <Column Name="NdsSum" DataType="System.Decimal"/>
+      <Column Name="GoodModificationName" DataType="System.String"/>
+      <Column Name="DisplayedName" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="sets" ReferenceName="sets" DataType="System.Linq.Enumerable+&lt;SelectManyIterator&gt;d__17`2[[Gbs.Core.Entities.Documents.Document, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null],[Gbs.Helpers.FR.BackEnd.Entities.ListItems.BasketItem, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null]], System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Enabled="true">
+      <Column Name="DocumentsType" DataType="System.Int32"/>
+      <Column Name="DocumentUid" DataType="System.Guid"/>
+      <Column Name="GoodUid" DataType="System.Guid"/>
+      <Column Name="Good" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Good, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null">
+        <Column Name="Uid" DataType="System.Guid"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Group" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.GoodGroup, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null">
+          <Column Name="Uid" DataType="System.Guid"/>
+          <Column Name="Name" DataType="System.String"/>
+          <Column Name="ParentGroupUid" DataType="System.Guid"/>
+          <Column Name="GoodsType" DataType="System.String"/>
+          <Column Name="UnitsUid" DataType="System.Guid"/>
+          <Column Name="NeedComment" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="IsDataParent" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="IsRequestCount" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="TaxRateNumber" DataType="System.Int32"/>
+          <Column Name="KkmSectionNumber" DataType="System.Int32"/>
+          <Column Name="IsFreePrice" DataType="System.Boolean" BindableControl="CheckBox"/>
+          <Column Name="DecimalPlace" DataType="System.Int32"/>
+          <Column Name="RuTaxSystem" DataType="System.String"/>
+          <Column Name="RuFfdGoodsType" DataType="System.String"/>
+          <Column Name="RuMarkedProductionType" DataType="System.String"/>
+          <Column Name="TaxRateNumberText" DataType="System.String"/>
+        </Column>
+        <Column Name="Barcode" DataType="System.String"/>
+        <Column Name="UnitName" DataType="System.String"/>
+        <Column Name="Unit" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Unit, Market, Version=6.6.0.2320, Culture=neutral, PublicKeyToken=null">
+          <Column Name="FullName" DataType="System.String"/>
+          <Column Name="ShortName" DataType="System.String"/>
+          <Column Name="Code" DataType="System.String"/>
+        </Column>
+        <Column Name="VatValue" DataType="System.Decimal"/>
+        <Column Name="NdsName" DataType="System.String"/>
+        <Column Name="NdsValue" DataType="System.Decimal"/>
+        <Column Name="TotalCount" DataType="System.Decimal"/>
+        <Column Name="Description" DataType="System.String"/>
+        <BusinessObjectDataSource Name="BusinessObjectDataSource2" Alias="Properties" Enabled="false" DataType="System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" PropName="Properties"/>
+      </Column>
+      <Column Name="Quantity" DataType="System.Decimal"/>
+      <Column Name="Price" DataType="System.Decimal"/>
+      <Column Name="BuyPrice" DataType="System.Decimal"/>
+      <Column Name="Discount" DataType="System.Decimal"/>
+      <Column Name="Comment" DataType="System.String"/>
+      <Column Name="DiscountSum" DataType="System.Decimal"/>
+      <Column Name="Sum" DataType="System.Decimal"/>
+      <Column Name="SumLessNds" DataType="System.Decimal"/>
+      <Column Name="NdsValue" DataType="System.Decimal"/>
+      <Column Name="NdsSum" DataType="System.Decimal"/>
+      <Column Name="GoodModificationName" DataType="System.String"/>
+      <Column Name="DisplayedName" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="CompanyAddress" DataType="System.String"/>
+    <Parameter Name="CompanyName" DataType="System.String"/>
+    <Parameter Name="CompanyPhone" DataType="System.String"/>
+    <Parameter Name="CompanyPublicPointName" DataType="System.String"/>
+    <Parameter Name="CompanyInfo" DataType="System.String"/>
+    <Parameter Name="CompanyInn" DataType="System.String"/>
+    <Parameter Name="CompanyKPP" DataType="System.String"/>
+    <Parameter Name="CompanyOGRN" DataType="System.String"/>
+    <Parameter Name="CompanyBank" DataType="System.String"/>
+    <Parameter Name="CompanyBik" DataType="System.String"/>
+    <Parameter Name="CompanyKs" DataType="System.String"/>
+    <Parameter Name="CompanyRs" DataType="System.String"/>
+    <Parameter Name="DbName" DataType="System.String"/>
+    <Total Name="TotalCount" Expression="[sets.Quantity]" Evaluator="Data2" PrintOn="DataFooter1"/>
+    <Total Name="TotalCountAll" Expression="[sets.Quantity]" Evaluator="Data1"/>
+    <Total Name="TotalSumAll" Expression="[productions.Sum]" Evaluator="Data1"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="37.8">
+      <TextObject Name="Text1" Left="47.25" Top="9.45" Width="633.15" Height="28.35" CanGrow="true" Text="Виробництво товарів" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="39.93" Width="718.2" Height="66.15" CanGrow="true" CanShrink="true" DataSource="productions" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text8" Left="9.45" Top="9.45" Width="623.7" Height="18.9" Border.Lines="Left, Right, Top" Text="[productions.DisplayedName]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text23" Left="9.45" Top="47.25" Width="47.25" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+      <TextObject Name="Text24" Left="56.7" Top="47.25" Width="122.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[productions.Good.Group.Name]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+      <TextObject Name="Text25" Left="179.55" Top="47.25" Width="255.15" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[productions.DisplayedName]" VertAlign="Center" Font="Arial, 8pt"/>
+      <TextObject Name="Text26" Left="434.7" Top="47.25" Width="56.7" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[productions.Quantity]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+      <TextObject Name="Text27" Left="9.45" Top="28.35" Width="47.25" Height="18.9" Border.Lines="All" Text="№ п\п" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text28" Left="56.7" Top="28.35" Width="122.85" Height="18.9" Border.Lines="All" Text="Категорія" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text29" Left="179.55" Top="28.35" Width="255.15" Height="18.9" Border.Lines="All" Text="Найменування" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text30" Left="434.7" Top="28.35" Width="56.7" Height="18.9" Border.Lines="All" Text="К-сть" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text31" Left="491.4" Top="47.25" Width="56.7" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[productions.Price]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+      <TextObject Name="Text32" Left="491.4" Top="28.35" Width="56.7" Height="18.9" Border.Lines="All" Text="Ціна" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text33" Left="548.1" Top="28.35" Width="85.05" Height="18.9" Border.Lines="All" Text="Сума" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text34" Left="548.1" Top="47.25" Width="85.05" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[productions.Sum]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+      <DataBand Name="Data2" Top="148.13" Width="718.2" Height="18.9" CanGrow="true" CanShrink="true" DataSource="sets" Filter="[productions.DocumentUid]==[sets.DocumentUid]">
+        <TextObject Name="Text9" Left="9.45" Width="47.25" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+        <TextObject Name="Text10" Left="56.7" Width="122.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[sets.Good.Group.Name]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+        <TextObject Name="Text11" Left="179.55" Width="255.15" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[sets.DisplayedName]" VertAlign="Center" Font="Arial, 8pt"/>
+        <TextObject Name="Text12" Left="434.7" Width="56.7" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[sets.Quantity]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="108.21" Width="718.2" Height="37.8" CanGrow="true" CanShrink="true">
+          <TextObject Name="Text4" Left="9.45" Top="18.9" Width="47.25" Height="18.9" Border.Lines="All" Text="№ п\п" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TextObject Name="Text5" Left="56.7" Top="18.9" Width="122.85" Height="18.9" Border.Lines="All" Text="Категорія" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TextObject Name="Text6" Left="179.55" Top="18.9" Width="255.15" Height="18.9" Border.Lines="All" Text="Найменування" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TextObject Name="Text7" Left="434.7" Top="18.9" Width="56.7" Height="18.9" Border.Lines="All" Text="К-сть" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TextObject Name="Text22" Left="9.45" Width="481.95" Height="18.9" Border.Lines="Left, Right" Text="Складові товару:" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" VertAlign="Center" Font="Arial, 10pt, style=Italic"/>
+        </DataHeaderBand>
+        <DataFooterBand Name="DataFooter1" Top="169.16" Width="718.2" Height="18.9" CanShrink="true">
+          <TextObject Name="Text17" Left="9.45" Width="425.25" Height="18.9" Border.Lines="All" Text="РАЗОМ" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TextObject Name="Text18" Left="434.7" Width="56.7" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[TotalCount]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt"/>
+        </DataFooterBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter2" Top="190.19" Width="718.2" Height="37.8">
+        <TextObject Name="Text35" Left="9.45" Width="425.25" Height="18.9" Border.Lines="All" Text="РАЗОМ" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        <TextObject Name="Text38" Left="434.7" Width="56.7" Height="18.9" Border.Lines="All" Text="[TotalCountAll]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        <TextObject Name="Text39" Left="491.4" Width="56.7" Height="18.9" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        <TextObject Name="Text40" Left="548.1" Width="85.05" Height="18.9" Border.Lines="All" Text="[TotalSumAll]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="230.12" Width="718.2" Height="18.9"/>
+  </ReportPage>
+</Report>

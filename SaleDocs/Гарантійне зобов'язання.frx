@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="03/17/2026 17:35:02" ReportInfo.CreatorVersion="2020.1.28.0">
+  <ScriptText> using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    public static string GrnPhrase (decimal money)
+    { 
+      return CurPhrase(money,&quot;гривня&quot;,&quot;гривні&quot;,&quot;гривень&quot;,&quot;копійка&quot;,&quot;копійки&quot;,&quot;копійок&quot;);
+    }
+ 
+    
+ 
+    private static string NumPhrase (ulong Value, bool IsMale) 
+    {
+      if (Value==0) return &quot;Нуль&quot;;
+      string[] Dek1={&quot;&quot;,&quot; одна&quot;,&quot; дві&quot;,&quot; три&quot;,&quot; чотири&quot;,&quot; п'ять&quot;,&quot; шість&quot;,&quot; сім&quot;,&quot; вісім&quot;,&quot; дев'ять&quot;,&quot; десять&quot;,&quot; одинадцять&quot;,&quot; дванадцять&quot;,&quot; тринадцять&quot;,&quot; чотирнадцять&quot;,&quot; п'ятнадцять&quot;,&quot; шістнадцять&quot;,&quot; сімнадцять&quot;,&quot; вісімнадцять&quot;,&quot; дев'ятнадцять&quot;};
+      string[] Dek2={&quot;&quot;,&quot;&quot;,&quot; двадцять&quot;,&quot; тридцять&quot;,&quot; сорок&quot;,&quot; п'ятдесят&quot;,&quot; шістдесят&quot;,&quot; сімдесят&quot;,&quot; вісімдесят&quot;,&quot; дев'яносто&quot;};
+      string[] Dek3={&quot;&quot;,&quot; сто&quot;,&quot; двісті&quot;,&quot; триста&quot;,&quot; чотириста&quot;,&quot; п'ятсот&quot;,&quot; шістсот&quot;,&quot; сімсот&quot;,&quot; вісімсот&quot;,&quot; дев'ятсот&quot;};
+      string[] Th={&quot;&quot;,&quot;&quot;,&quot; тисяч&quot;,&quot; мільйон&quot;,&quot; міліард&quot;,&quot; триліон&quot;,&quot; квадриліон&quot;,&quot; квинтиліон&quot;};
+      string str=&quot;&quot;;
+      for (byte th=1; Value&gt;0; th++) 
+      {
+        ushort gr=(ushort)(Value%1000); 
+        Value=(Value-gr)/1000;
+        if (gr&gt;0) 
+        {
+          byte d3=(byte)((gr-gr%100)/100);
+          byte d1=(byte)(gr%10);
+          byte d2=(byte)((gr-d3*100-d1)/10);
+          if (d2==1) d1+=(byte)10;
+          bool ismale=(th&gt;2)||((th==1)&amp;&amp;IsMale);
+          str=Dek3[d3]+Dek2[d2]+Dek1[d1]+EndDek1(d1,ismale)+Th[th]+EndTh(th,d1)+str;
+        };
+      };
+      str=str.Substring(1,1).ToUpper()+str.Substring(2);
+      return str;
+    }
+ 
+    #region Private members
+    private static string CurPhrase (decimal money, 
+      string word1,string word234,string wordmore,
+      string sword1,string sword234,string swordmore)
+    { 
+      //money=decimal.Round(money,2);
+      decimal decintpart=decimal.Truncate(money);
+      ulong intpart=decimal.ToUInt64(decintpart);
+      string str=NumPhrase(intpart,true)+&quot; &quot;;
+      byte endpart=(byte)(intpart%100); 
+      if (endpart&gt;19) endpart=(byte)(endpart%10);
+      switch (endpart) 
+      {
+        case 1: str+=word1; break;
+        case 2:
+        case 3:
+        case 4: str+=word234; break;
+        default: str+=wordmore; break;
+      }
+      byte fracpart=decimal.ToByte((money-decintpart)*100M);
+      str+=&quot; &quot;+((fracpart&lt;10)?&quot;0&quot;:&quot;&quot;)+fracpart.ToString()+&quot; &quot;;
+      if (fracpart&gt;19) fracpart=(byte)(fracpart%10);
+      switch (fracpart) 
+      {
+        case 1: str+=sword1; break;
+        case 2:
+        case 3:
+        case 4: str+=sword234; break;
+        default: str+=swordmore; break;
+      };
+      return str;
+    }
+    private static string EndTh(byte ThNum, byte Dek)
+    {
+      bool In234=((Dek&gt;=2)&amp;&amp;(Dek&lt;=4));
+      bool More4=((Dek&gt;4)||(Dek==0));
+      if (((ThNum&gt;2)&amp;&amp;In234)||((ThNum==2)&amp;&amp;(Dek==1))) return &quot;а&quot;;
+      else if ((ThNum&gt;2)&amp;&amp;More4) return &quot;ів&quot;;
+      else if ((ThNum==2)&amp;&amp;In234) return &quot;і&quot;;
+      else return &quot;&quot;;
+    }
+    private static string EndDek1(byte Dek, bool IsMale)
+    {
+      if ((Dek&gt;2)||(Dek==0)) return &quot;&quot;;
+      else if (Dek==1) 
+      {
+        if (IsMale) return &quot;&quot;;
+        else return &quot;&quot;;
+      }
+      else 
+      {
+        if (IsMale) return &quot;&quot;; 
+        else return &quot;&quot;;    
+      }
+    }
+    #endregion
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <BusinessObjectDataSource Name="goods" ReferenceName="goods" DataType="null" PropName="goods1" Enabled="true">
+      <Column Name="Good" DataType="null">
+        <Column Name="Uid" DataType="System.Guid"/>
+        <Column Name="BusinessObjectDataSource2" Alias="Properties" DataType="System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" PropName="Properties">
+          <Column Name="Key" DataType="System.String"/>
+          <Column Name="Value" Enabled="false" DataType="System.Object"/>
+        </Column>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Group" DataType="null">
+          <Column Name="Uid" DataType="System.Guid"/>
+          <Column Name="Name" DataType="System.String"/>
+        </Column>
+        <Column Name="Barcode" DataType="System.String"/>
+        <Column Name="UnitName" DataType="System.String"/>
+        <Column Name="VatValue" DataType="System.Decimal"/>
+        <BusinessObjectDataSource Name="BusinessObjectDataSource1" Alias="Properties" DataType="System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" PropName="Properties" Enabled="true">
+          <Column Name="Value" DataType="System.Object"/>
+          <Column Name="Key" DataType="System.String"/>
+        </BusinessObjectDataSource>
+      </Column>
+      <Column Name="Quantity" DataType="System.Decimal"/>
+      <Column Name="Price" DataType="System.Decimal"/>
+      <Column Name="Discount" DataType="System.Decimal"/>
+      <Column Name="Comment" DataType="System.String"/>
+      <Column Name="DiscountSum" DataType="System.Decimal"/>
+      <Column Name="Sum" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="CompanyAddress" DataType="System.String"/>
+    <Parameter Name="CompanyName" DataType="System.String"/>
+    <Parameter Name="CompanyPhone" DataType="System.String"/>
+    <Parameter Name="CompanyPublicPointName" DataType="System.String"/>
+    <Parameter Name="CompanyInfo" DataType="System.String"/>
+    <Parameter Name="CompanyInn" DataType="System.String"/>
+    <Parameter Name="CompanyKPP" DataType="System.String"/>
+    <Parameter Name="CompanyOGRN" DataType="System.String"/>
+    <Parameter Name="CompanyBank" DataType="System.String"/>
+    <Parameter Name="CompanyBik" DataType="System.String"/>
+    <Parameter Name="CompanyKs" DataType="System.String"/>
+    <Parameter Name="CompanyRs" DataType="System.String"/>
+    <Parameter Name="DocumentDate" DataType="System.DateTime"/>
+    <Parameter Name="DocumentNumber" DataType="System.String"/>
+    <Parameter Name="UserName" DataType="System.String"/>
+    <Total Name="Total" Expression="[goods.Sum]" Evaluator="Data1"/>
+    <Total Name="TotalDiscount" Expression="[goods.DiscountSum]" Evaluator="Data1"/>
+    <Total Name="TotalCount" Expression="[goods.Quantity]" Evaluator="Data1"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="37.8" CanGrow="true" CanBreak="true">
+      <TextObject Name="Text5" Left="18.9" Top="9.45" Width="680.4" Height="22.94" Text="Гарантійне зобов'зання № [DocumentNumber] від [FormatDateTime([DocumentDate],&quot;dd.MM.yyyy&quot;)]" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+      <LineObject Name="Line23" Left="9.45" Top="30.24" Width="695.52" Border.Width="3" Diagonal="true"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="40.43" Width="718.2" Height="18.9" CanShrink="true">
+      <TableObject Name="Table2" Left="9.45" Width="695.53" Height="18.9" Border.Lines="All" ManualBuildAutoSpans="false">
+        <TableColumn Name="Column6" Width="92.99"/>
+        <TableColumn Name="Column7" Width="261.2"/>
+        <TableColumn Name="Column8" Width="92.99"/>
+        <TableColumn Name="Column9" Width="128.9"/>
+        <TableColumn Name="Column10" Width="119.45"/>
+        <TableRow Name="Row2">
+          <TableCell Name="Cell6" Border.Lines="All" Fill.Color="Silver" Text="№" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell7" Border.Lines="All" Fill.Color="Silver" Text="Найменування" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell8" Border.Lines="All" Fill.Color="Silver" Text="Кіл-ть" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell9" Border.Lines="All" Fill.Color="Silver" Text="Гарантія, міс." HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell10" Border.Lines="All" Fill.Color="Silver" Text="Серійний номер" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+      </TableObject>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="61.96" Width="718.2" Height="18.9" CanGrow="true" CanShrink="true" DataSource="goods">
+      <TableObject Name="Table3" Left="9.45" Width="695.53" Height="18.9" Border.Lines="All" ManualBuildAutoSpans="false">
+        <TableColumn Name="Column11" Width="92.99"/>
+        <TableColumn Name="Column12" Width="261.2"/>
+        <TableColumn Name="Column13" Width="92.99"/>
+        <TableColumn Name="Column14" Width="128.9"/>
+        <TableColumn Name="Column15" Width="119.45"/>
+        <TableRow Name="Row3" AutoSize="true">
+          <TableCell Name="Cell11" Border.Lines="All" Text="[Row#]" HorzAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell12" Border.Lines="All" Text="[goods.Good.Name]" HorzAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell13" Border.Lines="All" Text="[goods.Quantity]" HorzAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell14" Border.Lines="All" HorzAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell15" Border.Lines="All" Text="[goods.Comment]" HorzAlign="Center" Font="Arial, 10pt"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="83.49" Width="718.2" Height="756" CanBreak="true">
+      <LineObject Name="Line25" Left="9.45" Top="642.6" Width="189" Border.Width="2" Diagonal="true"/>
+      <TextObject Name="Text41" Left="255.15" Top="652.05" Width="188.73" Height="19.13" Text="[FormatDateTime([DocumentDate],&quot;dd.MM.yyyy&quot;)]" HorzAlign="Center" Font="Arial, 9pt"/>
+      <RichObject Name="Rich1" Left="9.45" Top="9.45" Width="695.52" Height="576.45" CanShrink="true" GrowToBottom="true" Text="{\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fnil\fcharset204 Times New Roman;}{\f2\fnil Times New Roman;}}&#13;&#10;{\*\generator Riched20 10.0.22000}\viewkind4\uc1 &#13;&#10;\pard\kerning1\b\f0\fs18\lang1033 1. \b0 [CompanyName]\f1\lang1058  \'e7\'ee\'e1\'ee\'e2\f0\lang1033 '\f1\lang1058\'ff\'e7\'f3\'ba\'f2\'fc\'f1\'ff\f0\lang1033  \f1\lang1058\'e7\'e4\'b3\'e9\'f1\'ed\'fe\'e2\'e0\'f2\'e8\f0\lang1033  \f1\lang1058\'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'f3\f0\lang1033  \f1\lang1058\'ef\'b3\'e4\'f2\'f0\'e8\'ec\'ea\'f3\f0\lang1033  \f1\lang1058\'c2\'e8\'f0\'ee\'e1\'b3\'e2\f0\lang1033 , \f1\lang1058\'ef\'ee\'f1\'f2\'e0\'e2\'eb\'e5\'ed\'e8\'f5\f0\lang1033  \f1\lang1058\'c7\'e0\'ec\'ee\'e2\'ed\'e8\'ea\'ee\'e2\'b3\f0\lang1033 , \f1\lang1058\'ed\'e5\'f1\'ef\'f0\'e0\'e2\'ed\'b3\'f1\'f2\'fc\f0\lang1033 , \f1\lang1058\'ff\'ea\'e8\'f5\f0\lang1033  \f1\lang1058\'e2\'b3\'e4\'e1\'f3\'eb\'e0\'f1\'ff\f0\lang1033  \f1\lang1058\'e7\f0\lang1033  \f1\lang1058\'e2\'e8\'ed\'e8\f0\lang1033  \f1\lang1058\'e2\'e8\'f0\'ee\'e1\'ed\'e8\'ea\'e0\f0\lang1033 , \f1\lang1058\'ee\'ea\'f0\'b3\'ec\f0\lang1033  \f1\lang1058\'e2\'e8\'ef\'e0\'e4\'ea\'b3\'e2\f0\lang1033  \f1\lang1058\'e2\'e7\'e0\'ba\'ec\'ed\'ee\'bf\f0\lang1033  \f1\lang1058\'e4\'ee\'ec\'ee\'e2\'eb\'e5\'ed\'ee\'f1\'f2\'b3\f0\lang1033  \f1\lang1058\'ef\'f0\'ee\f0\lang1033  \f1\lang1058\'ef\'ee\'f1\'f2\'e0\'f7\'e0\'ed\'ed\'ff\f0\lang1033  \f1\lang1058\'ef\'f0\'ee\'e4\'f3\'ea\'f6\'b3\'bf\f0\lang1033  \f1\lang1058\'e1\'e5\'e7\f0\lang1033  \f1\lang1058\'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'ee\'bf\f0\lang1033  \f1\lang1058\'ef\'b3\'e4\'f2\'f0\'e8\'ec\'ea\'e8\f0\lang1033 .\par&#13;&#10;\par&#13;&#10;\b 2. \f1\lang1058\'cf\'b3\'e4\'f1\'f2\'e0\'e2\'ee\'fe \'e4\'eb\'ff \'e7\'e4\'b3\'e9\'f1\'ed\'e5\'ed\'ed\'ff \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'ee\'bf \'ef\'b3\'e4\'f2\'f0\'e8\'ec\'ea\'e8 \'ba \'ed\'e0\'f1\'f2\'f3\'ef\'ed\'b3 \'f3\'ec\'ee\'e2\'e8: \par&#13;&#10;\b0 - \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'e8\'e9 \'f0\'e5\'ec\'ee\'ed\'f2 \'ef\'f0\'ee\'e2\'ee\'e4\'e8\'f2\'fc\'f1\'ff \'f2\'b3\'eb\'fc\'ea\'e8 \'e2 \'f3\'ef\'ee\'e2\'ed\'ee\'e2\'e0\'e6\'e5\'ed\'ee\'ec\'f3 \'f1\'e5\'f0\'e2\'b3\'f1\'ed\'ee\'ec\'f3 \'f6\'e5\'ed\'f2\'f0\'b3 (\'d3\'d1\'d6) \'ef\'f0\'ee\'f2\'ff\'e3\'ee\'ec \'f2\'e5\'f0\'ec\'b3\'ed\'f3 \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'bf, \'e7\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'ee\'e3\'ee \'e2 \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'ee\'ec\'f3 \'b3 \'e2\'b3\'e4\'f0\'e8\'e2\'ed\'e8\'f5 \'f2\'e0\'eb\'ee\'ed\'e0\'f5; \par&#13;&#10;- \'ef\'f0\'e8 \'f3\'f1\'f3\'ed\'e5\'ed\'b3 \'ed\'e5\'e4\'ee\'eb\'b3\'ea\'b3\'e2 \'f8\'eb\'ff\'f5\'ee\'ec \'e7\'e0\'ec\'b3\'ed\'e8 \'ea\'ee\'ec\'ef\'eb\'e5\'ea\'f2\'f3\'fe\'f7\'e8\'f5 \'e0\'e1\'ee \'f1\'ea\'eb\'e0\'e4\'ee\'e2\'e8\'f5 \'f7\'e0\'f1\'f2\'e8\'ed \'e2\'e8\'f0\'ee\'e1\'f3, \'ed\'e0 \'ff\'ea\'b3 \'e2\'f1\'f2\'e0\'ed\'ee\'e2\'eb\'e5\'ed\'ee \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'b3 \'f2\'e5\'f0\'ec\'b3\'ed\'e8, \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'e8\'e9 \'f2\'e5\'f0\'ec\'b3\'ed \'ed\'e0 \'ed\'ee\'e2\'b3 \'ea\'ee\'ec\'ef\'eb\'e5\'ea\'f2\'f3\'fe\'f7\'b3 \'e0\'e1\'ee \'f1\'ea\'eb\'e0\'e4\'ee\'e2\'b3 \'f7\'e0\'f1\'f2\'e8\'ed\'e8 \'e2\'e8\'f0\'ee\'e1\'f3 \'ee\'e1\'f7\'e8\'f1\'eb\'fe\'ba\'f2\'fc\'f1\'ff \'e2\'b3\'e4 \'e4\'ed\'ff \'e2\'e8\'e4\'e0\'f7\'b3 \'f1\'ef\'ee\'e6\'e8\'e2\'e0\'f7\'e5\'e2\'b3 \'e2\'e8\'f0\'ee\'e1\'f3 \'ef\'b3\'f1\'eb\'ff \'f0\'e5\'ec\'ee\'ed\'f2\'f3 \'b3 \'f1\'ea\'eb\'e0\'e4\'e0\'ba \'ee\'e4\'e8\'ed \'ec\'b3\'f1\'ff\'f6\'fc; \par&#13;&#10;- \'ed\'e5\'f1\'ef\'f0\'e0\'e2\'ed\'b3 \'e2\'f3\'e7\'eb\'e8 \'e2\'e8\'f0\'ee\'e1\'f3 \'e2 \'ef\'e5\'f0\'b3\'ee\'e4 \'e4\'b3\'bf \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'e8\'f5 \'e7\'ee\'e1\'ee\'e2\rquote\'ff\'e7\'e0\'ed\'fc \'f0\'e5\'ec\'ee\'ed\'f2\'f3\'fe\'f2\'fc\'f1\'ff \'e7\'e0 \'f0\'e0\'f5\'f3\'ed\'ee\'ea \'d3\'d1\'d6 \'e0\'e1\'ee \'e7\'e0\'ec\'b3\'ed\'fe\'fe\'f2\'fc\'f1\'ff \'ef\'f0\'e0\'f6\'e5\'e7\'e4\'e0\'f2\'ed\'e8\'ec\'e8. \'d0\'b3\'f8\'e5\'ed\'ed\'ff \'ef\'f0\'ee \'e4\'ee\'f6\'b3\'eb\'fc\'ed\'b3\'f1\'f2\'fc \'f0\'e5\'ec\'ee\'ed\'f2\'f3 \'e0\'e1\'ee \'e7\'e0\'ec\'b3\'ed\'e8 \'ef\'f0\'e8\'e9\'ec\'e0\'ba \'f4\'e0\'f5\'b3\'e2\'f6\'b3 \'d3\'d1\'d6. \par&#13;&#10;- \'ed\'e5\'f1\'ef\'f0\'e0\'e2\'ed\'b3 \'e2\'f3\'e7\'eb\'e8 \'e7\'e0\'ec\'b3\'ed\'e5\'ed\'b3 \'e2 \'ef\'e5\'f0\'b3\'ee\'e4 \'e4\'b3\'bf \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'e8\'f5 \'e7\'ee\'e1\'ee\'e2'\'ff\'e7\'e0\'ed\'fc, \'ef\'e5\'f0\'e5\'f5\'ee\'e4\'e8\'f2\'fc \'f3 \'e2\'eb\'e0\'f1\'ed\'b3\'f1\'f2\'fc \'d3\'d1\'d6; \par&#13;&#10;- \'c2\'e8\'f0\'b3\'e1 \'ef\'f0\'e8\'e9\'ec\'e0\'ba\'f2\'fc\'f1\'ff \'e2 \'f0\'e5\'ec\'ee\'ed\'f2 \'f2\'b3\'eb\'fc\'ea\'e8 \'e2 \'ee\'f0\'e8\'e3\'b3\'ed\'e0\'eb\'fc\'ed\'b3\'e9 \'f3\'ef\'e0\'ea\'ee\'e2\'f6\'b3 \'f2\'e0 \'f3\'ea\'ee\'ec\'ef\'eb\'e5\'ea\'f2\'ee\'e2\'e0\'ed\'e8\'e9 \'e7\'e3\'b3\'e4\'ed\'ee \'e7 \'ea\'ee\'ec\'ef\'eb\'e5\'ea\'f2\'ee\'ec \'ef\'ee\'f1\'f2\'e0\'e2\'ea\'e8, \'e7\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'ee\'e3\'ee \'e2 \'b3\'ed\'f1\'f2\'f0\'f3\'ea\'f6\'b3\'bf \'ef\'ee \'e5\'ea\'f1\'ef\'eb\'f3\'e0\'f2\'e0\'f6\'b3\'bf; \par&#13;&#10;\b 3. \'c2\'e8\'f0\'ee\'e1\'e8 \'e7\'ed\'b3\'ec\'e0\'fe\'f2\'fc\'f1\'ff \'e7 \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'bf \'f3 \'e2\'e8\'ef\'e0\'e4\'ea\'e0\'f5: \b0\par&#13;&#10;- \'e2\'e8\'f0\'ee\'e1\'ed\'e8\'ea \'ef\'f0\'e8\'ef\'e8\'ed\'ff\'ba \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'f3 \'ef\'b3\'e4\'f2\'f0\'e8\'ec\'ea\'f3 \'c2\'e8\'f0\'ee\'e1\'f3, \'ef\'f0\'ee \'f9\'ee \'f1\'e2\'b3\'e4\'f7\'e8\'f2\'fc \'ee\'f4\'b3\'f6\'b3\'e9\'ed\'e5 \'ef\'ee\'e2\'b3\'e4\'ee\'ec\'eb\'e5\'ed\'ed\'ff; \par&#13;&#10;- \'e2\'e8\'ff\'e2\'eb\'e5\'ed\'ed\'ff \'ef\'ee\'f0\'f3\'f8\'e5\'ed\'fc \'ef\'f0\'e0\'e2\'e8\'eb \'f3\'f1\'f2\'e0\'ed\'ee\'e2\'ea\'e8 \'b3 \'e5\'ea\'f1\'ef\'eb\'f3\'e0\'f2\'e0\'f6\'b3\'bf \'c2\'e8\'f0\'ee\'e1\'f3; \par&#13;&#10;- \'e2\'e8\'ff\'e2\'eb\'e5\'ed\'ed\'ff \'f1\'eb\'b3\'e4\'b3\'e2 \'f0\'e5\'ec\'ee\'ed\'f2\'f3 \'e2 \'ed\'e5 \'f3\'ef\'ee\'e2\'ed\'ee\'e2\'e0\'e6\'e5\'ed\'ee\'ec\'f3 \'f1\'e5\'f0\'e2\'b3\'f1\'ed\'ee\'ec\'f3 \'f6\'e5\'ed\'f2\'f0\'b3 \'e0\'e1\'ee \'b3\'ed\'f8\'ee\'e3\'ee \'ed\'e5\'f1\'e0\'ed\'ea\'f6\'b3\'ee\'ed\'ee\'e2\'e0\'ed\'ee\'e3\'ee \'e2\'f2\'f0\'f3\'f7\'e0\'ed\'ed\'ff; \par&#13;&#10;- \'e7\'e0 \'e2\'b3\'e4\'f1\'f3\'f2\'ed\'ee\'f1\'f2\'b3 \'ed\'e0 \'c2\'e8\'f0\'ee\'e1\'b3 \'e7\'e0\'e2\'ee\'e4\'f1\'fc\'ea\'e8\'f5 \'e4\'e0\'ed\'e8\'f5 \f2\emdash  \f1\'f1\'e5\'f0\'b3\'e9\'ed\'ee\'e3\'ee \'ed\'ee\'ec\'e5\'f0\'e0 \'b3 \'ed\'ee\'ec\'e5\'f0\'e0 \'ef\'e0\'f0\'f2\'b3\'bf, \'e7\'e0\'e2\'ee\'e4\'f1\'fc\'ea\'e8\'f5 \'ef\'eb\'ee\'ec\'e1, \'e0 \'f2\'e0\'ea\'ee\'e6 \'ef\'f0\'e8 \'ef\'ee\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'ed\'ff\'f5 \'ed\'e0\'ef\'e8\'f1\'b3\'e2, \'f9\'ee \'f0\'ee\'e1\'eb\'ff\'f2\'fc \'ed\'e5\'ec\'ee\'e6\'eb\'e8\'e2\'ee\'fe \'bf\'f5 \'f0\'ee\'e7\'f8\'e8\'f4\'f0\'ee\'e2\'ea\'f3; \par&#13;&#10;- \'e7\'e0 \'ed\'e0\'ff\'e2\'ed\'ee\'f1\'f2\'b3 \'ec\'e5\'f5\'e0\'ed\'b3\'f7\'ed\'e8\'f5 \'ef\'ee\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'fc, \'f2\'e0\'ea\'e8\'f5 \'ff\'ea \'f2\'f0\'b3\'f9\'e8\'ed\'e8, \'e3\'eb\'e8\'e1\'ee\'ea\'b3 \'ef\'ee\'e4\'f0\'ff\'ef\'e8\'ed\'e8, \'e2\'b3\'e4\'f1\'f3\'f2\'ed\'ee\'f1\'f2\'b3 \'f1\'ef\'ee\'eb\'f3\'f7\'ed\'e8\'f5 \'e3\'e2\'e8\'ed\'f2\'b3\'e2, \'f7\'e0\'f1\'f2\'e8\'ed \'e2 \'e2\'f3\'e7\'eb\'b3\'e2 \'c2\'e8\'f0\'ee\'e1\'f3, \'ec\'e5\'f5\'e0\'ed\'b3\'f7\'ed\'e5 \'f0\'ee\'e7\rquote\'ba\'e4\'ed\'e0\'ed\'ed\'ff \'e5\'eb\'e5\'ea\'f2\'f0\'e8\'f7\'ed\'e8\'f5 \'e7\rquote\'ba\'e4\'ed\'e0\'ed\'fc; \par&#13;&#10;- \'ed\'e5\'f1\'e0\'ed\'ea\'f6\'b3\'ee\'ed\'ee\'e2\'e0\'ed\'ee\'bf \'ec\'ee\'e4\'e8\'f4\'b3\'ea\'e0\'f6\'b3\'bf \'e2\'e8\'f0\'ee\'e1\'f3 (\'ef\'e5\'f0\'e5\'ef\'e0\'fe\'e2\'e0\'ed\'ed\'ff, \'e7\'e0\'ec\'b3\'ed\'e0 \'ec\'ee\'e4\'f3\'eb\'b3\'e2); \par&#13;&#10;- \'f4\'b3\'e7\'e8\'f7\'ed\'ee\'e3\'ee \'ef\'ee\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'ed\'ff\'f5 \'e5\'eb\'e5\'ea\'f2\'f0\'ee\'ed\'ed\'ee\'e3\'ee \'ec\'ee\'e4\'f3\'eb\'ff \'c2\'e8\'f0\'ee\'e1\'f3; \par&#13;&#10;- \'f0\'ee\'e7\'e3\'ee\'ed \'ef\'f0\'ee\'f6\'e5\'f1\'ee\'f0\'b3\'e2, \'e2\'b3\'e4\'e5\'ee-\'ea\'e0\'f0\'f2 \'f2\'e0 \'b3\'ed\'f8\'e8\'f5 \'e2\'e8\'f0\'ee\'e1\'b3\'e2; \par&#13;&#10;- \'e7\'e0 \'ed\'e0\'ff\'e2\'ed\'ee\'f1\'f2\'b3 \'ed\'e0 \'c2\'e8\'f0\'ee\'e1\'b3 \'f1\'f2\'ee\'f0\'ee\'ed\'ed\'b3\'f5 \'ed\'e0\'ef\'e8\'f1\'b3\'e2, \'ed\'e0\'ea\'eb\'e5\'e9\'ee\'ea, \'ea\'f0\'b3\'ef\'e8\'eb\'fc\'ed\'e8\'f5 \'f0\'e0\'ec\'ee\'ea \'b3 \'b3\'ed\'f8\'e8\'f5 \'e4\'ee\'ef\'ee\'e2\'ed\'e5\'ed\'fc; \par&#13;&#10;- \'ef\'f0\'e8 \'e2\'e8\'ea\'ee\'f0\'e8\'f1\'f2\'e0\'ed\'ed\'b3 \'ed\'e5\'eb\'b3\'f6\'e5\'ed\'e7\'b3\'e9\'ed\'e8\'f5 \'e0\'e1\'ee \'ef\'ee\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'e8\'f5 \'e4\'e8\'f1\'ea\'b3\'e2 \'ee\'ef\'f2\'e8\'f7\'ed\'e8\'f5 \'ef\'f0\'e8\'e2\'ee\'e4\'e0\'f5; \par&#13;&#10;- \'ef\'f0\'e8 \'ed\'e5\'e4\'ee\'f2\'f0\'e8\'ec\'e0\'ed\'ed\'b3 \'ee\'f0\'e8\'e3\'b3\'ed\'e0\'eb\'fc\'ed\'ee\'bf \'ea\'ee\'ec\'ef\'eb\'e5\'ea\'f2\'ed\'ee\'f1\'f2\'b3 \'c2\'e8\'f0\'ee\'e1\'f3; \par&#13;&#10;- \'f3\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'ed\'ff \'e2\'e8\'ea\'eb\'e8\'ea\'e0\'ed\'e8\'e9 \'ef\'ee\'ef\'e0\'e4\'e0\'ed\'ed\'ff\'ec \'e2\'f1\'e5\'f0\'e5\'e4\'e8\'ed\'f3 \'e2\'e8\'f0\'ee\'e1\'f3 \'f1\'f2\'ee\'f0\'ee\'ed\'ed\'b3\'f5 \'ef\'f0\'e5\'e4\'ec\'e5\'f2\'b3\'e2, \'f0\'b3\'e4\'e8\'ed\'e8, \'ea\'ee\'ec\'e0\'f5, \'ed\'e0\'ff\'e2\'ed\'ee\'f1\'f2\'b3 \'e7\'e0\'ef\'e8\'eb\'e5\'ed\'ed\'ff \'b3 \'f2. \'e4.; \par&#13;&#10;- \'f3\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'ed\'ff, \'f9\'ee \'e2\'e8\'ea\'eb\'e8\'ea\'e0\'ed\'b3 \'ed\'e5\'e2\'b3\'e4\'ef\'ee\'e2\'b3\'e4\'ed\'b3\'f1\'f2\'fe \'ef\'e0\'f0\'e0\'ec\'e5\'f2\'f0\'b3\'e2 \'e6\'e8\'e2\'e8\'eb\'fc\'ed\'e8\'f5, \'f2\'e5\'eb\'e5\'ea\'ee\'ec\'f3\'ed\'b3\'ea\'e0\'f6\'b3\'e9\'ed\'e8\'f5, \'ea\'e0\'e1\'e5\'eb\'fc\'ed\'e8\'f5 \'ec\'e5\'f0\'e5\'e6 \'e4\'e5\'f0\'e6\'e0\'e2\'ed\'e8\'ec \'f1\'f2\'e0\'ed\'e4\'e0\'f0\'f2\'e0\'ec, \'b3\'ed\'f8\'e8\'ec\'e8 \'ef\'ee\'e4\'b3\'e1\'ed\'e8\'ec\'e8 \'e7\'ee\'e2\'ed\'b3\'f8\'ed\'b3\'ec\'e8 \'f4\'e0\'ea\'f2\'ee\'f0\'e0\'ec\'e8; \par&#13;&#10;- \'f3\'f8\'ea\'ee\'e4\'e6\'e5\'ed\'ed\'ff, \'f9\'ee \'e2\'e8\'ea\'eb\'e8\'ea\'e0\'ed\'b3 \'e2\'e8\'ea\'ee\'f0\'e8\'f1\'f2\'e0\'ed\'ed\'ff\'ec \'ed\'e5\'f1\'f2\'e0\'ed\'e4\'e0\'f0\'f2\'ed\'e8\'f5 \'ec\'e0\'f2\'e5\'f0\'b3\'e0\'eb\'b3\'e2, \'e0\'e4\'e0\'ef\'f2\'e5\'f0\'b3\'e2, \'e1\'eb\'ee\'ea\'b3\'e2 \'e6\'e8\'e2\'eb\'e5\'ed\'ed\'ff, \'e7\'e0\'ef\'f7\'e0\'f1\'f2\'e8\'ed \'b3 \'f2. \'e4. \par&#13;&#10;\b\'c3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'b3 \'e7\'ee\'e1\'ee\'e2\rquote\'ff\'e7\'e0\'ed\'ed\'ff \'ed\'e5 \'f0\'ee\'e7\'ef\'ee\'e2\'f1\'fe\'e4\'e6\'f3\'fe\'f2\'fc\'f1\'ff \'ed\'e0: \par&#13;&#10;\b0 - \'e4\'f0\'f3\'ea\'f3\'fe\'f7\'b3 \'e3\'ee\'eb\'ee\'e2\'ea\'e8 \'e4\'eb\'ff \'ef\'f0\'e8\'ed\'f2\'e5\'f0\'b3\'e2; - \'ea\'e0\'f0\'f2\'f0\'e8\'e4\'e6\'b3 \'e4\'eb\'ff \'ec\'e0\'f2\'f0\'e8\'f7\'ed\'e8\'f5 \'ef\'f0\'e8\'ed\'f2\'e5\'f0\'b3\'e2; \par&#13;&#10;- RS(232, 422, 485)/LPT/Ethernet/PS2/USB \par&#13;&#10;- \'ef\'ee\'f0\'f2\'e8; \par&#13;&#10;- \'ef\'f0\'ee\'e3\'f0\'e0\'ec\'ed\'e5 \'e7\'e0\'e1\'e5\'e7\'ef\'e5\'f7\'e5\'ed\'ed\'ff; \par&#13;&#10;- \'e7\'ee\'e2\'ed\'b3\'f8\'ed\'b3 \'e1\'eb\'ee\'ea\'e8 \'e6\'e8\'e2\'eb\'e5\'ed\'ed\'ff, \'e0\'ea\'f3\'ec\'f3\'eb\'ff\'f2\'ee\'f0\'ed\'b3 \'b3 \'e7\'e2\'e8\'f7\'e0\'e9\'ed\'b3 \'e1\'e0\'f2\'e0\'f0\'e5\'bf, \'f0\'e5\'ec\'ed\'b3, \'e7\'e0\'f5\'e8\'f1\'ed\'b3 \'e5\'ea\'f0\'e0\'ed\'e8, \'b3\'ed\'f2\'e5\'f0\'f4\'e5\'e9\'f1\'ed\'b3 \'ea\'e0\'e1\'e5\'eb\'b3, \'ea\'e0\'e1\'e5\'eb\'b3 \'e6\'e8\'e2\'eb\'e5\'ed\'ed\'ff \'b3 \'b3\'ed\'f8\'b3 \'e4\'e5\'f2\'e0\'eb\'b3 \'f9\'ee \'ec\'e0\'fe\'f2\'fc \'ee\'e1\'ec\'e5\'e6\'e5\'ed\'e8\'e9 \'f2\'e5\'f0\'ec\'b3\'ed \'e5\'ea\'f1\'ef\'eb\'f3\'e0\'f2\'e0\'f6\'b3\'bf. \par&#13;&#10;\par&#13;&#10;&#13;&#10;\pard\qc\b\'c1\'e5\'e7 \'ef\'b3\'e4\'ef\'e8\'f1\'f3 \'ef\'ee\'ea\'f3\'ef\'f6\'ff \'e3\'e0\'f0\'e0\'ed\'f2\'b3\'e9\'ed\'e8\'e9 \'f2\'e0\'eb\'ee\'ed \'e2\'e2\'e0\'e6\'e0\'ba\'f2\'fc\'f1\'ff \'ed\'e5 \'e4\'b3\'e9\'f1\'ed\'e8\'ec\kerning0\lang1049\par&#13;&#10;}&#13;&#10;"/>
+      <LineObject Name="Line27" Left="255.15" Top="642.6" Width="189" Border.Width="2" Diagonal="true"/>
+      <LineObject Name="Line28" Left="510.3" Top="642.6" Width="189" Border.Width="2" Diagonal="true"/>
+      <TextObject Name="Text43" Left="510.3" Top="652.05" Width="188.73" Height="19.13" Text="Покупець" HorzAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text44" Left="9.45" Top="652.05" Width="188.73" Height="19.13" Text="Продавець" HorzAlign="Center" Font="Arial, 9pt"/>
+    </ReportSummaryBand>
+  </ReportPage>
+</Report>

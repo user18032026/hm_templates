@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="03/19/2024 09:28:52" ReportInfo.CreatorVersion="2020.1.28.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    public static string GrnPhrase (decimal money)
+    { 
+      return CurPhrase(money,&quot;гривня&quot;,&quot;гривні&quot;,&quot;гривень&quot;,&quot;копійка&quot;,&quot;копійки&quot;,&quot;копійок&quot;);
+    }
+ 
+    
+ 
+    private static string NumPhrase (ulong Value, bool IsMale) 
+    {
+      if (Value==0) return &quot;Нуль&quot;;
+      string[] Dek1={&quot;&quot;,&quot; одна&quot;,&quot; дві&quot;,&quot; три&quot;,&quot; чотири&quot;,&quot; п'ять&quot;,&quot; шість&quot;,&quot; сім&quot;,&quot; вісім&quot;,&quot; дев'ять&quot;,&quot; десять&quot;,&quot; одинадцять&quot;,&quot; дванадцять&quot;,&quot; тринадцять&quot;,&quot; чотирнадцять&quot;,&quot; п'ятнадцять&quot;,&quot; шістнадцять&quot;,&quot; сімнадцять&quot;,&quot; вісімнадцять&quot;,&quot; дев'ятнадцять&quot;};
+      string[] Dek2={&quot;&quot;,&quot;&quot;,&quot; двадцять&quot;,&quot; тридцять&quot;,&quot; сорок&quot;,&quot; п'ятдесят&quot;,&quot; шістдесят&quot;,&quot; сімдесят&quot;,&quot; вісімдесят&quot;,&quot; дев'яносто&quot;};
+      string[] Dek3={&quot;&quot;,&quot; сто&quot;,&quot; двісті&quot;,&quot; триста&quot;,&quot; чотириста&quot;,&quot; п'ятсот&quot;,&quot; шістсот&quot;,&quot; сімсот&quot;,&quot; вісімсот&quot;,&quot; дев'ятсот&quot;};
+      string[] Th={&quot;&quot;,&quot;&quot;,&quot; тисяч&quot;,&quot; мільйон&quot;,&quot; міліард&quot;,&quot; триліон&quot;,&quot; квадриліон&quot;,&quot; квинтиліон&quot;};
+      string str=&quot;&quot;;
+      for (byte th=1; Value&gt;0; th++) 
+      {
+        ushort gr=(ushort)(Value%1000); 
+        Value=(Value-gr)/1000;
+        if (gr&gt;0) 
+        {
+          byte d3=(byte)((gr-gr%100)/100);
+          byte d1=(byte)(gr%10);
+          byte d2=(byte)((gr-d3*100-d1)/10);
+          if (d2==1) d1+=(byte)10;
+          bool ismale=(th&gt;2)||((th==1)&amp;&amp;IsMale);
+          str=Dek3[d3]+Dek2[d2]+Dek1[d1]+EndDek1(d1,ismale)+Th[th]+EndTh(th,d1)+str;
+        };
+      };
+      str=str.Substring(1,1).ToUpper()+str.Substring(2);
+      return str;
+    }
+ 
+    #region Private members
+    private static string CurPhrase (decimal money, 
+      string word1,string word234,string wordmore,
+      string sword1,string sword234,string swordmore)
+    { 
+      //money=decimal.Round(money,2);
+      decimal decintpart=decimal.Truncate(money);
+      ulong intpart=decimal.ToUInt64(decintpart);
+      string str=NumPhrase(intpart,true)+&quot; &quot;;
+      byte endpart=(byte)(intpart%100); 
+      if (endpart&gt;19) endpart=(byte)(endpart%10);
+      switch (endpart) 
+      {
+        case 1: str+=word1; break;
+        case 2:
+        case 3:
+        case 4: str+=word234; break;
+        default: str+=wordmore; break;
+      }
+      byte fracpart=decimal.ToByte((money-decintpart)*100M);
+      str+=&quot; &quot;+((fracpart&lt;10)?&quot;0&quot;:&quot;&quot;)+fracpart.ToString()+&quot; &quot;;
+      if (fracpart&gt;19) fracpart=(byte)(fracpart%10);
+      switch (fracpart) 
+      {
+        case 1: str+=sword1; break;
+        case 2:
+        case 3:
+        case 4: str+=sword234; break;
+        default: str+=swordmore; break;
+      };
+      return str;
+    }
+    private static string EndTh(byte ThNum, byte Dek)
+    {
+      bool In234=((Dek&gt;=2)&amp;&amp;(Dek&lt;=4));
+      bool More4=((Dek&gt;4)||(Dek==0));
+      if (((ThNum&gt;2)&amp;&amp;In234)||((ThNum==2)&amp;&amp;(Dek==1))) return &quot;а&quot;;
+      else if ((ThNum&gt;2)&amp;&amp;More4) return &quot;ів&quot;;
+      else if ((ThNum==2)&amp;&amp;In234) return &quot;і&quot;;
+      else return &quot;&quot;;
+    }
+    private static string EndDek1(byte Dek, bool IsMale)
+    {
+      if ((Dek&gt;2)||(Dek==0)) return &quot;&quot;;
+      else if (Dek==1) 
+      {
+        if (IsMale) return &quot;&quot;;
+        else return &quot;&quot;;
+      }
+      else 
+      {
+        if (IsMale) return &quot;&quot;; 
+        else return &quot;&quot;;    
+      }
+    }
+    #endregion
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <BusinessObjectDataSource Name="goods" ReferenceName="goods" DataType="null" PropName="goods1" Enabled="true">
+      <Column Name="Good" DataType="null">
+        <Column Name="Uid" DataType="System.Guid"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Group" DataType="null">
+          <Column Name="Uid" DataType="System.Guid"/>
+<Column Name="BusinessObjectDataSource2" Alias="Properties"
+DataType="System.Collections.Generic.Dictionary`2[[System.String,
+mscorlib, Version=4.0.0.0, Culture=neutral,
+PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib,
+Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+PropName="Properties">
+ <Column Name="Key" DataType="System.String"/>
+ <Column Name="Value" Enabled="false"
+DataType="System.Object"/>
+</Column>
+          <Column Name="Name" DataType="System.String"/>
+        </Column>
+        <Column Name="Barcode" DataType="System.String"/>
+        <Column Name="UnitName" DataType="System.String"/>
+        <Column Name="VatValue" DataType="System.Decimal"/>
+      </Column>
+      <Column Name="Quantity" DataType="System.Decimal"/>
+      <Column Name="Price" DataType="System.Decimal"/>
+      <Column Name="BuyPrice" DataType="System.Decimal"/>
+      <Column Name="Discount" DataType="System.Decimal"/>
+      <Column Name="Comment" DataType="System.String"/>
+      <Column Name="DiscountSum" DataType="System.Decimal"/>
+      <Column Name="Sum" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="CompanyName" DataType="System.String"/>
+    <Parameter Name="CompanyInfo" DataType="System.String"/>
+    <Parameter Name="UserName" DataType="System.String"/>
+    <Parameter Name="CompanyAddress" DataType="System.String"/>
+    <Parameter Name="CompanyPhone" DataType="System.String"/>
+    <Parameter Name="CompanyInn" DataType="System.String"/>
+    <Parameter Name="CompanyKPP" DataType="System.String"/>
+    <Parameter Name="CompanyOGRN" DataType="System.String"/>
+    <Parameter Name="CompanyBank" DataType="System.String"/>
+    <Parameter Name="CompanyBik" DataType="System.String"/>
+    <Parameter Name="CompanyKs" DataType="System.String"/>
+    <Parameter Name="CompanyRs" DataType="System.String"/>
+    <Parameter Name="DocumentDate" DataType="System.DateTime"/>
+    <Parameter Name="DocumentNumber" DataType="System.String"/>
+    <Parameter Name="DocumentComment" DataType="System.String"/>
+    <Total Name="TotalCount" Expression="[goods.Quantity]" Evaluator="Data1" ResetAfterPrint="false"/>
+    <Total Name="TotalNames" TotalType="Count" Evaluator="Data1"/>
+    <Total Name="TotalSumm" Expression="[goods.Sum]" Evaluator="Data1"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Guides="9.45,718.2,689.87,62.06,350.91,441.32,531.73,622.14,699.78,68.07,360.98,455.33,541.58,636.2,689.85,695.72,628.53,269.3,250.49,670.95" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="103.95" CanGrow="true" Guides="75.6,103.95,9.45">
+      <TextObject Name="Text5" Left="9.45" Top="47.25" Width="680.4" Height="28.35" Text="Накладна на надходження №[DocumentNumber] від [FormatDateTime([DocumentDate],&quot;dd.MM.yyyy HH:mm&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="9.45" Top="28.35" Width="680.4" Height="18.9" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[CompanyInfo]" Font="Arial, 10pt"/>
+      <TextObject Name="Text4" Left="9.45" Top="9.45" Width="680.4" Height="18.9" CanGrow="true" CanShrink="true" Text="[CompanyName]" Font="Arial, 10pt"/>
+      <TextObject Name="Text2" Left="9.45" Top="85.05" Width="661.5" Height="18.9" Text="[IIf(Length([ClientName])&gt;0,&quot;Постачальник: &quot; + [ClientName], &quot;&quot;)]" Font="Arial, 10pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="105.36" Width="718.2" Height="37.8" Guides="0,18.9">
+      <TableObject Name="Table2" Left="9.45" Width="680.4" Height="37.8" ManualBuildAutoSpans="false">
+        <TableColumn Name="Column6" Width="58.59"/>
+        <TableColumn Name="Column7" Width="379.89"/>
+        <TableColumn Name="Column8" Width="86.94"/>
+        <TableColumn Name="Column19" Width="77.49"/>
+        <TableColumn Name="Column20" Width="77.49"/>
+        <TableRow Name="Row2" Height="37.8">
+          <TableCell Name="Cell6" Border.Lines="All" Text="№ " HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell7" Border.Lines="All" Text="Найменування" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell8" Border.Lines="All" Text="Роз-на ціна" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell19" Border.Lines="Top, Bottom" Text="Кіл-ть" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell20" Border.Lines="All" Text="Сума" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+      </TableObject>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="144.57" Width="718.2" Height="18.9" CanGrow="true" CanShrink="true" Guides="0,18.9,0" DataSource="goods">
+      <TableObject Name="Table1" Left="9.45" Width="680.4" Height="18.9" CanBreak="false" RepeatHeaders="false">
+        <TableColumn Name="Column1" Width="58.59"/>
+        <TableColumn Name="Column2" Width="379.89"/>
+        <TableColumn Name="Column3" Width="86.94"/>
+        <TableColumn Name="Column21" Width="77.49"/>
+        <TableColumn Name="Column22" Width="77.49"/>
+        <TableRow Name="Row1" MaxHeight="75.6" AutoSize="true">
+          <TableCell Name="Cell1" Border.Lines="All" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell2" Border.Lines="All" Text="[goods.Good.Name]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell3" Border.Lines="All" Text="[goods.Price]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="," Format.GroupSeparator=" " Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell21" Border.Lines="Top, Bottom" Text="[goods.Quantity]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="," Format.GroupSeparator=" " Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TableCell Name="Cell22" Border.Lines="All" Text="[goods.Sum]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="," Format.GroupSeparator=" " Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="164.88" Width="718.2" Height="141.75" Guides="28.35,47.25,0,18.9,85.05,103.95">
+      <TextObject Name="Text3" Left="9.45" Top="85.05" Width="680.4" Height="18.9" Text="Товари прийняв: ____________([UserName])" HorzAlign="Right" Font="Arial, 10pt"/>
+      <TextObject Name="Text6" Left="9.45" Top="9.45" Width="588.83" Height="75.6" Text="Всього найменувань: [TotalNames]&#13;&#10;Всього товарів: [TotalCount]&#13;&#10;Загальна сума: [FormatCurrency([TotalSumm])]&#13;&#10;Прописом: [GrnPhrase([TotalSumm])]" Font="Arial, 10pt"/>
+    </ReportSummaryBand>
+  </ReportPage>
+</Report>
