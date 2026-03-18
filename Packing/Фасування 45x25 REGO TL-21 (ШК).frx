@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="04/03/2024 10:17:51" ReportInfo.CreatorVersion="2020.1.28.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="goods" ReferenceName="goods" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.ListItems.LabelItem, Market, Version=6.6.0.2365, Culture=neutral, PublicKeyToken=null]]" PropName="goods1" Enabled="true">
+      <Column Name="Good" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Good, Market, Version=6.6.0.2365, Culture=neutral, PublicKeyToken=null">
+        <Column Name="Uid" DataType="System.Guid"/>
+<Column Name="BusinessObjectDataSource2" Alias="Properties"
+DataType="System.Collections.Generic.Dictionary`2[[System.String,
+mscorlib, Version=4.0.0.0, Culture=neutral,
+PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib,
+Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+PropName="Properties">
+ <Column Name="Key" DataType="System.String"/>
+ <Column Name="Value" Enabled="false"
+DataType="System.Object"/>
+</Column>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Group" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.GoodGroup, Market, Version=6.6.0.2365, Culture=neutral, PublicKeyToken=null">
+          <Column Name="Uid" DataType="System.Guid"/>
+          <Column Name="Name" DataType="System.String"/>
+        </Column>
+        <Column Name="Barcode" DataType="System.String"/>
+        <Column Name="UnitName" DataType="System.String"/>
+        <Column Name="VatValue" DataType="System.Decimal"/>
+      </Column>
+      <Column Name="Price" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="CompanyName" DataType="System.String"/>
+    <Parameter Name="CompanyInfo" DataType="System.String"/>
+    <Parameter Name="ext1Name" DataType="System.String"/>
+    <Parameter Name="ext2Name" DataType="System.String"/>
+    <Parameter Name="ext3Name" DataType="System.String"/>
+    <Parameter Name="ext4Name" DataType="System.String"/>
+    <Parameter Name="ext5Name" DataType="System.String"/>
+    <Parameter Name="CompanyAddress" DataType="System.String"/>
+    <Parameter Name="CompanyPhone" DataType="System.String"/>
+    <Parameter Name="CompanyPublicPointName" DataType="System.String"/>
+    <Parameter Name="CompanyInn" DataType="System.String"/>
+    <Parameter Name="CompanyKPP" DataType="System.String"/>
+    <Parameter Name="CompanyOGRN" DataType="System.String"/>
+    <Parameter Name="CompanyBank" DataType="System.String"/>
+    <Parameter Name="CompanyBik" DataType="System.String"/>
+    <Parameter Name="CompanyKs" DataType="System.String"/>
+    <Parameter Name="CompanyRs" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" PaperWidth="45" PaperHeight="25" LeftMargin="0" TopMargin="0" RightMargin="0" BottomMargin="0" FirstPageSource="1" OtherPagesSource="1" Watermark.Font="Arial, 60pt">
+    <DataBand Name="Data1" Width="170.1" Height="94.5" DataSource="goods" KeepTogether="true">
+      <TextObject Name="Text1" Left="5.67" Top="15.12" Width="158.76" Height="24.57" Text="[goods.Good.Name]" Padding="2, 2, 2, 0" HorzAlign="Center" Font="Arial, 6pt"/>
+      <BarcodeObject Name="Barcode1" Left="10.21" Top="62.37" Width="149.69" Height="16.5" AutoSize="false" Text="[goods.Good.Barcode]" ShowText="false" AllowExpressions="true" Barcode="Code128" Barcode.AutoEncode="true"/>
+      <TextObject Name="Text2" Left="92.61" Top="40.82" Width="69.93" Height="19.66" Text="Ціна: [[goods.Price]*[goods.Quantity]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="," Format.GroupSeparator=" " Format.NegativePattern="1" Font="Arial, 6.5pt, style=Bold"/>
+      <TextObject Name="Text3" Left="7.56" Top="81.27" Width="154.98" Height="9.45" Text="[goods.Good.Barcode]" HorzAlign="Center" Font="Arial, 6pt"/>
+      <TextObject Name="Text4" Left="100.17" Top="3.78" Width="66.15" Height="9.45" Text="[FormatDateTime([Date],&quot;dd.MM.yyyy&quot;)]" HorzAlign="Right" Font="Arial, 5pt"/>
+      <TextObject Name="Text5" Left="9.45" Top="3.78" Width="75.6" Height="9.45" Text="[CompanyName]" Font="Arial, 5pt"/>
+      <TextObject Name="Text6" Left="9.45" Top="40.82" Width="75.6" Height="19.66" Text="Вага: [goods.Quantity]" Format="Number" Format.UseLocale="true" Format.DecimalDigits="3" Font="Arial, 6.5pt, style=Bold"/>
+    </DataBand>
+  </ReportPage>
+</Report>
