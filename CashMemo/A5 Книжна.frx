@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="03/18/2026 09:59:40" ReportInfo.CreatorVersion="2020.1.28.0" PrintSettings.PrintOnSheetWidth="148" PrintSettings.PrintOnSheetHeight="210">
   <Dictionary>
     <BusinessObjectDataSource Name="goods" ReferenceName="goods" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.ListItems.BasketItem, Market, Version=6.8.0.3070, Culture=neutral, PublicKeyToken=null]]" PropName="goods1" Enabled="true">
