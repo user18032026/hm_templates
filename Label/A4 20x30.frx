@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="02/19/2020 23:01:01" ReportInfo.CreatorVersion="2019.1.12.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="02/19/2020 23:01:01" ReportInfo.CreatorVersion="2019.1.12.0"> 
+  
   <Dictionary>
     <BusinessObjectDataSource Name="goods" ReferenceName="goods" DataType="System.Collections.Generic.List`1[[Gbs.Helpers.FR.BackEnd.Entities.ListItems.LabelItem, Market, Version=6.0.0.650, Culture=neutral, PublicKeyToken=null]]" PropName="goods1" Enabled="true">
       <Column Name="Good" DataType="Gbs.Helpers.FR.BackEnd.Entities.Goods.Good, Market, Version=6.0.0.650, Culture=neutral, PublicKeyToken=null">
