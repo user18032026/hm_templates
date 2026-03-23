@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="03/17/2026 15:24:04" ReportInfo.CreatorVersion="2020.1.28.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="06/20/2009 22:40:42" ReportInfo.Modified="03/23/2026 13:54:09" ReportInfo.CreatorVersion="2020.1.28.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -143,8 +143,8 @@ namespace FastReport
         <TableColumn Name="Column6" Width="91.47"/>
         <TableColumn Name="Column7" Width="91.47"/>
         <TableRow Name="Row6" Height="9.45" AutoSize="true">
-          <TableCell Name="Cell24" Text="СУМА [IIf(ToDecimal([RoundSum])==0m,&quot;&quot;,nl + &quot;Заокруглення&quot;)]" HideZeros="true" AutoShrink="FontSize" Font="Arial, 9pt, style=Bold"/>
-          <TableCell Name="Cell25" Text="[IIf(Length([OrgName])&gt;0m,FormatNumber([NoRoundSum],2) + &quot; ГРН&quot;,FormatNumber([TotalSum],2) + &quot; ГРН&quot;)] [IIf([RoundSum]==0m,&quot;&quot;,nl + [RoundSum] + &quot; грн&quot;)]" AutoShrink="FontSize" HorzAlign="Right" Font="Arial, 8pt, style=Bold"/>
+          <TableCell Name="Cell24" Text="СУМА [IIf(ToDecimal([RoundSum])==0m,IIf([DiscountOnSale]&lt;0,nl + &quot;Заокруглення&quot;,&quot;&quot;),nl + &quot;Заокруглення&quot;)]" HideZeros="true" AutoShrink="FontSize" Font="Arial, 9pt, style=Bold"/>
+          <TableCell Name="Cell25" Text="[IIf(Length([OrgName])&gt;0m,FormatNumber([NoRoundSum],2) + &quot; ГРН&quot;,FormatNumber([TotalSum],2) + &quot; ГРН&quot;)] [IIf([RoundSum]==0m,IIf([DiscountOnSale]&lt;0,nl + FormatNumber([DiscountOnSale],2) + &quot; грн&quot;,&quot;&quot;), nl + [RoundSum] + &quot; грн&quot;)]" AutoShrink="FontSize" HorzAlign="Right" Font="Arial, 8pt, style=Bold"/>
         </TableRow>
       </TableObject>
       <LineObject Name="Line2" Left="18.14" Width="182.95" Border.Style="Dash" Diagonal="true"/>
@@ -175,7 +175,7 @@ namespace FastReport
         <TableColumn Name="Column15" Width="91.47"/>
         <TableRow Name="Row10" Height="9.45" AutoSize="true">
           <TableCell Name="Cell32" Text="[IIf(ToDecimal([TotalDiscount])==0m,&quot;ДО СПЛАТИ&quot;,&quot;ЗНИЖКА&quot; + nl + &quot;ДО СПЛАТИ&quot;)]" HideZeros="true" Font="Arial, 10pt, style=Bold"/>
-          <TableCell Name="Cell33" Text="[IIf(ToDecimal([TotalDiscount])==0m,FormatNumber([TotalSum],2) + &quot; грн&quot;, IIf(Length([OrgName])&gt;0m,FormatNumber([TotalDiscount],2) + &quot; грн&quot; + nl + FormatNumber([TotalSum],2) + &quot; грн&quot;, FormatNumber([TotalDiscount],2) + &quot; %&quot; + nl + FormatNumber([TotalSum],2) + &quot; грн&quot;))]" HorzAlign="Right" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell33" Text="[IIf(ToDecimal([TotalDiscount])==0m,FormatNumber([TotalSum],2) + &quot; грн&quot;, IIf(Length([OrgName])&gt;0m,FormatNumber([TotalDiscount],2) + &quot; грн&quot; + nl + FormatNumber([TotalSum],2) + &quot; грн&quot;, FormatNumber([TotalDiscount],2) + &quot; %&quot; + nl + FormatNumber([TotalSum]-[DiscountOnSale],2) + &quot; грн&quot;))]" HorzAlign="Right" Font="Arial, 10pt, style=Bold"/>
         </TableRow>
       </TableObject>
       <LineObject Name="Line7" Left="18.14" Top="1.89" Width="182.95" Border.Style="Dash" Diagonal="true"/>
